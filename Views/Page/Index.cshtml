@@ -43,7 +43,7 @@
     <script>
         let editorInstances = new Object();
 
-        $(document).ready(function () {
+        function handlingImagesCount() {
             $('.custom-file-input').on("change", function () {
                 var fileLabel = $(this).next('.custom-file-label');
                 var files = $(this)[0].files;
@@ -54,7 +54,7 @@
                     fileLabel.html(files[0].name);
                 }
             });
-        });
+        }
         function savePage() {
             let x = $(".custom-file-input");
             console.log($(".custom-file-input"));
@@ -216,6 +216,7 @@
 
             $("#sectionsContainer").append(htmlContent);
             handlingCKEditor(ckeditorsToBeRendered);
+            handlingImagesCount();
         }
         function handlingCKEditor(ckeditorsToBeRendered) {
             let asyncIterator = 0;

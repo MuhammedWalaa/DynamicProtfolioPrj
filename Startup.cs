@@ -22,7 +22,7 @@ namespace DynamicProtfolioPrj
             _configuration = new ConfigurationBuilder()
                 .SetBasePath(environment.ContentRootPath)
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            .AddJsonFile($"appsettings.{environment.EnvironmentName}.json", optional: true)
+            .AddJsonFile($"appsettings.Development.json", optional: true)
             .AddEnvironmentVariables().Build();
             _environment = environment;
         }
@@ -36,7 +36,7 @@ namespace DynamicProtfolioPrj
             #region DbContext
             services.AddDbContext<DynamicProtfolioContext>(options =>
             {
-                options.UseSqlServer(_configuration.GetConnectionString("DynamicProtfolioContext"));
+                options.UseSqlServer("Server=SQL5103.site4now.net;Database=DB_A71A2E_MohammedWalaa;User Id=DB_A71A2E_MohammedWalaa_admin;Password=01118034187aA");
             });
 
             #endregion

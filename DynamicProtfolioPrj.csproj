@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <CopyRefAssembliesToPublishDirectory>false</CopyRefAssembliesToPublishDirectory>
     <GenerateRuntimeConfigurationFiles>True</GenerateRuntimeConfigurationFiles>
+    <UserSecretsId>c8cc9273-dc30-4b44-ab1d-2cc16c18cb6e</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
