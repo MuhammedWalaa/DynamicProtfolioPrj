@@ -3,7 +3,7 @@
 *@
 <div class="row">
     <div class="card" style="margin:auto; width:90%">
-        <div class="card-header"> <h1>Create New Section Template</h1></div>
+        <div class="card-header"> <h1>Create New Page</h1></div>
         <div class="card-body">
             <div class="row">
                 <div class="col-4">
@@ -31,8 +31,9 @@
             <div id="sectionsContainer">
 
             </div>
+            <a class="btn btn-singin" style=" background-color: #6610f2; float:right; margin-top:10px;" onclick="savePage();">Save Page</a>
+
         </div>
-        <a class="btn btn-singin" style=" background-color: #6610f2; float:right; margin-top:10px;" onclick="savePage();">Save Page</a>
 
     </div>
 </div>
@@ -154,7 +155,11 @@
             });
         }
         function handlingSection(data) {
-            let htmlContent = `<div id="section`+data.id+`" class="section" style="margin:5%;"><h2 style="text-align: center;"> ` + data.name + ` </h2>`;
+            let htmlContent = `<div id="section` + data.id + `" class="section" style="margin:5%;"><h2 style="text-align: center;"> ` + data.name + ` </h2>
+
+                                
+            <a class="btn btn-singin" style=" background-color: red; float:right; margin-top:10px;"
+            onclick="removeContent(section` + data.id + `)">Remove Section</a>`;
             let ckeditorsToBeRendered = new Array();
             data.sectionContents.forEach((item, index) => {
 
@@ -243,6 +248,11 @@
             reader.onload = () => resolve(reader.result);
             reader.onerror = error => reject(error);
         });
+
+        function removeContent(element) {
+            debugger;
+            $("#" + element.id).remove();
+        }
     </script>
    
 }

@@ -44,7 +44,7 @@
                 var numberOfPartions = $("#partions").val();
                 let string = "";
                 for (var i = 0; i < parseInt(numberOfPartions); i++) {
-                    string += `<div class="col-` + (12 / numberOfPartions) + `">
+                    string += `<div id="subSection` + subSectionContainer.children().length + "cardDiv" + i + `" class="col-` + (12 / numberOfPartions) + `">
                 <div class="card" style="margin-top:10px;">
                     <div id="subSection`+ subSectionContainer.children().length +"card" + i + `" class="card-body">
                         <p style="width:50%" for="partions">Size of Sub Section</p>
@@ -69,11 +69,19 @@
                             <option value="3">Slider</option>
                             <option value="4">Video</option>
                         </select>
+            <a class="btn btn-singin" style=" background-color: red; float:right; margin-top:10px;"
+            onclick="removeContent(subSection` + subSectionContainer.children().length + "cardDiv" + i + `)">Remove</a>
+
                     </div>
                 </div>
             </div>`;
                 }
-                var htmlContent = `<div id="subSection` + subSectionContainer.children().length + `" class="row">` + string + ` </div>`;
+                var htmlContent = `<div id="subSection` + subSectionContainer.children().length + `" class="row">` + string + `
+
+                <div class="col-4">
+            <a class="btn btn-singin" style=" background-color: red; float:right; margin-top:10px;"
+            onclick="removeContent(subSection` + subSectionContainer.children().length +  `)">Remove Sub Sections</a></div></div>
+`;
                 subSectionContainer.append(htmlContent);
 
             }
@@ -136,7 +144,9 @@
                 });
 
             }
-
+        function removeContent(element) {
+            $("#" + element.id).remove();
+        }
     </script>
 }
 
