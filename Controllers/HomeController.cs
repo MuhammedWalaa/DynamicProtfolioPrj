@@ -6,14 +6,15 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using DynamicProtfolioPrj.Models;
+using DynamicProtfolioPrj.Services.IServices;
 
 namespace DynamicProtfolioPrj.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IPageService pageService) : base(pageService)
         {
             _logger = logger;
         }

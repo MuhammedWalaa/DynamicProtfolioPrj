@@ -1,0 +1,250 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+<div class="row">
+    <div class="card" style="margin:auto; width:90%">
+        <div class="card-header"> <h1>Create New Section Template</h1></div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-4">
+                    <p style="width:50%" for="name">Name of Page</p>
+                    <input class="form-control" id="name" />
+                </div>
+            </div>
+            <p for="sections">Section</p>
+
+            <div class="row">
+                <div class="col-4">
+                    <select class="form-control" id="sections">
+                        <option selected value="0"> --- Select Section ---</option>
+                        @for (int i = 0; i < ViewBag.Sections.Count; i++)
+                        {
+                            <option value="@ViewBag.Sections[i].Id">@ViewBag.Sections[i].Name</option>
+                        }
+                    </select>
+
+                </div>
+                <div class="col-4">
+                    <a class="btn btn-singin" style=" background-color: #6610f2" onclick="getSectionData();">Add Section</a>
+                </div>
+            </div>
+            <div id="sectionsContainer">
+
+            </div>
+        </div>
+        <a class="btn btn-singin" style=" background-color: #6610f2; float:right; margin-top:10px;" onclick="savePage();">Save Page</a>
+
+    </div>
+</div>
+</div>
+@section Scripts{
+    <script src="https://cdn.ckeditor.com/ckeditor5/27.0.0/classic/ckeditor.js"></script>
+    <script>
+        let editorInstances = new Object();
+
+        $(document).ready(function () {
+            $('.custom-file-input').on("change", function () {
+                var fileLabel = $(this).next('.custom-file-label');
+                var files = $(this)[0].files;
+                if (files.length > 1) {
+                    fileLabel.html(files.length + ' files selected');
+                }
+                else if (files.length == 1) {
+                    fileLabel.html(files[0].name);
+                }
+            });
+        });
+        function savePage() {
+            let x = $(".custom-file-input");
+            console.log($(".custom-file-input"));
+        }
+
+    function getSectionData() {
+        let selectedSection = $("#sections");
+        $()
+        if (selectedSection !== 0) {
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetById","Section")',
+                dataType: 'json',
+                data: { id: selectedSection.val() },
+                success: function (data) {
+                    handlingSection(data);
+                    },
+                    error: function (ex) {
+
+                        var r = jQuery.parseJSON(response.responseText);
+                        alert("Message: " + r.Message);
+                        alert("StackTrace: " + r.StackTrace);
+                        alert("ExceptionType: " + r.ExceptionType);
+                    }
+            });
+        }
+
+        }
+        async function savePage() {
+            let sections = $("#sectionsContainer").children(".section");
+            let sectionsId = new Array();
+            let pageName = $("#name").val();
+            let arrayOfContent = new Array();
+
+            if (sections.length < 1) {
+                alert("Please Select at least 1 section to save the page");
+                return;
+            }
+            for (var i = 0; i < sections.length; i++) {
+                sectionsId.push(parseInt(sections[i].id.replace("section", "")));
+                let subSections = $("#" + sections[i].id).children(".subSection");
+                for (var x = 0; x < subSections.length; x++) {
+                    let contents = $("#" + subSections[x].id).children(".content");
+                    for (var y = 0; y < contents.length; y++) {
+                        let contentData = $("#" + contents[y].id).find(".contentData");
+
+                        if (contentData[0]) {
+
+                            let dataObject = new Object();
+                            dataObject.contentId = parseInt(contentData[0].id.split("contentData")[1]);
+
+                            switch (parseInt(contentData[0].id.split("contentData")[0])) {
+                                case 1:
+                                    debugger;
+                                    dataObject.data = editorInstances[contentData[0].id].getData();
+                                    break;
+                                case 2:
+                                    dataObject.files = await getBase64(contentData[0].files);
+                                    break;
+                                case 3:
+                                    dataObject.files = await getBase64(contentData[0].files);
+                                    break;
+                                case 4:
+                                    dataObject.data = $("#" + contentData[0].id).val();
+                                    break;
+                                case 5:
+                                    // code block
+                                    break;
+                                default:
+                                    break;
+
+                            }
+                            arrayOfContent.push(dataObject);
+                        }
+                    }
+
+                }
+            }
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("Add","Page")',
+                dataType: 'json',
+                data: {
+                    name: pageName,
+                    contentData: arrayOfContent,
+                    sections: sectionsId
+                },
+                success: function (data) {
+                    alert(data.message);
+                },
+                error: function (ex) {
+
+                    var r = jQuery.parseJSON(response.responseText);
+                    alert("Message: " + r.Message);
+                    alert("StackTrace: " + r.StackTrace);
+                    alert("ExceptionType: " + r.ExceptionType);
+                }
+            });
+        }
+        function handlingSection(data) {
+            let htmlContent = `<div id="section`+data.id+`" class="section" style="margin:5%;"><h2 style="text-align: center;"> ` + data.name + ` </h2>`;
+            let ckeditorsToBeRendered = new Array();
+            data.sectionContents.forEach((item, index) => {
+
+                htmlContent += `<div style="margin:2%;" id="subSection` + item.id + `" class="row subSection">`;
+                item.contents.forEach((content, contentIndex) => {
+                    htmlContent += `<div id="content` + content.id + `" class="col-` + content.size + ` content">`;
+                    switch (content.type) {
+                        case 1:
+                            htmlContent += `                                        <p style = "text-align: center;"> Text Content </p>
+
+                                    <div id="contentDataContainer` + content.id + ` class="contentDataContainer"">
+                                        <textarea class="CKEditor` + content.type + `contentData` + content.id + ` contentData" id="` + content.type + `contentData` + content.id + `"></textarea>
+                                    </div>`;
+                            ckeditorsToBeRendered.push(content.type + `contentData` + content.id);
+                            break;
+                        case 2:
+                            htmlContent += ` <p style = "text-align: center;">Image Type</p>
+                                    <div class="custom-file" id="contentDataContainer` + content.id + `">
+
+                                        <input type="file" class="form-control custom-file-input contentData" accept=".png,.jpg" id="`+ content.type + `contentData` + content.id + `">
+                                        <label class="custom-file-label ">Choose File...</label>
+                                    </div>`;
+                            break;
+                        case 3:
+                            htmlContent += `
+                                    <p style = "text-align: center;"> Images For a Slider </p>
+                                     <div class="custom-file" id="contentDataContainer` + content.id + `">
+                                       <input type="file" multiple class="form-control custom-file-input contentData" accept=".png,.jpg" id="`+ content.type + `contentData` + content.id + `">
+                                        <label class="custom-file-label">Choose Files...</label>
+                                    </div>`;
+
+                            break;
+                        case 4:
+                            
+                            htmlContent += `
+                                                                            <p style = "text-align: center;">Video Url (Youtube-Vimeo)</p>
+                                    <div  id="contentDataContainer` + content.id + `">
+                                        <input type="text" class="form-control  contentData" id="`+ content.type + `contentData` + content.id + `" pattern="/http:\/\/(?:www.)?(?:(vimeo).com\/(.*)|(youtube).com\/watch\?v=(.*?)&)/">
+                                        
+                                    </div>`;
+                            break;
+                        case 5:
+                            // code block
+                            break;
+                        default:
+                            break;
+
+                    }
+                    htmlContent += "</div>"
+                });
+                htmlContent += "</div>"
+            });
+            htmlContent += "</div>";
+
+            $("#sectionsContainer").append(htmlContent);
+            handlingCKEditor(ckeditorsToBeRendered);
+        }
+        function handlingCKEditor(ckeditorsToBeRendered) {
+            let asyncIterator = 0;
+            for (var i = 0; i < ckeditorsToBeRendered.length; i++) {
+                ClassicEditor
+                    .create(document.querySelector(".CKEditor" + ckeditorsToBeRendered[i]))
+                    .then(editor => {
+
+                        editorInstances[ckeditorsToBeRendered[asyncIterator]] = editor;
+                        asyncIterator++;
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+            }
+
+        }
+        async function getBase64(files) {
+            let base64Array = new Array();
+            for (var i = 0; i < files.length; i++) {
+                let result = await toBase64(files[i]);
+                base64Array.push(result);
+            }
+            return base64Array;
+        }
+
+        const toBase64 = file => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+    </script>
+   
+}
+@{
+}

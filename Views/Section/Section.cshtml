@@ -1,0 +1,144 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+<div class="row">
+    <div class="card" style="margin:auto; width:90%">
+        <div class="card-header"> <h1>Create New Section Template</h1></div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-4">
+                    <p style="width:50%" for="name">Name of Page</p>
+                    <input class="form-control" id="name" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-4">
+                    <p for="partions">Number Of Partions</p>
+                    <select class="form-control" id="partions">
+                        <option selected value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                    </select>
+
+                </div>
+                <div class="col-4">
+
+                    <a class="btn btn-singin" style=" background-color: #6610f2" onclick="addNewSubSection()">Add Sub Section</a>
+                </div>
+            </div>
+            <div id="subSectionsContainer">
+            </div>
+            <a class="btn btn-singin" style=" background-color: #6610f2; float:right; margin-top:10px;" onclick="saveSectionTemplate()">Save Template</a>
+
+        </div>
+    </div>
+</div>
+@section Scripts{
+
+    <script>
+
+            function addNewSubSection() {
+                debugger;
+                var subSectionContainer = $("#subSectionsContainer");
+                var numberOfPartions = $("#partions").val();
+                let string = "";
+                for (var i = 0; i < parseInt(numberOfPartions); i++) {
+                    string += `<div class="col-` + (12 / numberOfPartions) + `">
+                <div class="card" style="margin-top:10px;">
+                    <div id="subSection`+ subSectionContainer.children().length +"card" + i + `" class="card-body">
+                        <p style="width:50%" for="partions">Size of Sub Section</p>
+                        <select class="form-control" id="partitionSize" style="width:20%">
+                            <option selected value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                        </select>
+                        <p style="width:50%" for="partions">Type Of Data</p>
+                        <select class="form-control" id="partitionType" style="width:20%">
+                            <option selected value="1">Text Content</option>
+                            <option value="2">Image</option>
+                            <option value="3">Slider</option>
+                            <option value="4">Video</option>
+                        </select>
+                    </div>
+                </div>
+            </div>`;
+                }
+                var htmlContent = `<div id="subSection` + subSectionContainer.children().length + `" class="row">` + string + ` </div>`;
+                subSectionContainer.append(htmlContent);
+
+            }
+            $(function () {
+                $("#subSectionsContainer").sortable({
+                    update: function (event, ui) {
+
+                    }//end update
+                });
+            });
+
+            function saveSectionTemplate() {
+                debugger;
+                var postedVM = new Object();
+                var subSections = $("#subSectionsContainer").children();
+                postedVM.name = $("#name").val();
+                postedVM.sectionContents = new Array();
+                for (var i = 0; i < subSections.length; i++) {
+                    var partitionContent = subSections[i];
+                    var partitionId = partitionContent.id;
+                    var x = new Object();
+                    x.order = i;
+                    x.contents = new Array();
+                    postedVM.sectionContents.push(x);
+
+                    for (var y = 0; y < $("#" + partitionId).children().length; y++) {
+                        let card = $("#" + partitionId + "card" + y);
+                        if (card) {
+                            var z = new Object();
+                            z.order = y;
+                            z.type = card.find("#partitionType").val();
+                            z.size = size = card.find("#partitionSize").val();
+                            postedVM.sectionContents[postedVM.sectionContents.length - 1].contents.push(z);
+                        }
+                    }
+                }
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("Add","Section")',
+                    dataType: 'json',
+                    data:postedVM,
+                    success: function (data) {
+                        alert(data.message)
+                    },
+                    error: function (ex) {
+                        debugger;
+                        var r = jQuery.parseJSON(response.responseText);
+                        alert("Message: " + r.Message);
+                        alert("StackTrace: " + r.StackTrace);
+                        alert("ExceptionType: " + r.ExceptionType);
+                    }
+                });
+                console.log(postedVM);
+            }
+            function getIdsOfImages() {
+                var values = [];
+                $('#subSectionsContainer').each(function (index) {
+                values.push($(this).attr("id")
+                    .replace("subSection", ""));
+                });
+
+            }
+
+    </script>
+}
+
+@{
+}
